@@ -6,13 +6,25 @@
 //  Copyright (c) 2013 Tomasz. All rights reserved.
 //
 
+#include "ncurses.h"
+#include "pthread.h"
 #include <iostream>
+
+using namespace std;
 
 int main(int argc, const char * argv[])
 {
 
     // insert code here...
-    std::cout << "Hello, World!\n";
+    //std::cout << "Hello, World!\n";
+    
+    initscr();
+    
+    char c;
+    cin >> c;
+    
+    endwin();
+    
     return 0;
 }
 

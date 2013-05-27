@@ -6,11 +6,13 @@
 //  Copyright (c) 2013 Tomasz. All rights reserved.
 //
 
-#include "ncurses.h"
-#include "pthread.h"
-#include <iostream>
-
-using namespace std;
+#include <ncurses.h>
+#include <pthread.h>
+#include <stdio.h>
+#include <time.h>
+#include <unistd.h>
+#include <stdlib.h>
+#include "Crossroad.h"
 
 int main(int argc, const char * argv[])
 {
@@ -19,9 +21,15 @@ int main(int argc, const char * argv[])
     //std::cout << "Hello, World!\n";
     
     initscr();
+    curs_set(0);
     
-    char c;
-    cin >> c;
+    Crossroad *cros = new Crossroad();
+    cros->drawCrossroad();
+    
+
+    
+    getch();
+    
     
     endwin();
     

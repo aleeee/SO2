@@ -1,2 +1,2 @@
-g++ -o program -lncurses main.cpp
+g++ -o program -lncurses main.cpp Crossroad.cpp
 

@@ -37,8 +37,8 @@ public:
             
             mvprintw(thisCar->yCord, thisCar->xCord, "x");
             refresh();
-            usleep(25000);
             pthread_mutex_unlock(thisCar->mutex);
+            usleep(thisCar->speed*1000);
         }
         return NULL;
     };

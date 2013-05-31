@@ -11,4 +11,17 @@
 
 #include <iostream>
 
+class Road {
+private:
+    char streamDirection;
+    int startCordY;
+    int startCordX;
+    int endCordY;
+    int endCordX;
+    char directionAuth;
+    char destination;
+public:
+    Road(char,int,int,int,int,char,char);
+};
+
 #endif /* defined(__SO2__Road__) */

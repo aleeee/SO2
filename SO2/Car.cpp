@@ -7,3 +7,14 @@
 //
 
 #include "Car.h"
+
+Car::Car(char sy, char d, int sp, int yC, int xC, pthread_mutex_t *m) {
+    symbol = sy;
+    destination = d;
+    speed = sp;
+    yCord = yC;
+    xCord = xC;
+    mutex = m;
+}
+
+

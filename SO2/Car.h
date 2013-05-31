@@ -10,5 +10,38 @@
 #define __SO2__Car__
 
 #include <iostream>
+#include <ncurses.h>
+#include <pthread.h>
+#include <unistd.h>
+
+class Car {
+private:
+    char symbol;
+    char destination;
+    int speed;
+    int yCord;
+    int xCord;
+    pthread_mutex_t *mutex;
+public:
+    Car(char,char,int,int,int,pthread_mutex_t*);
+    static void *move(void *ptr) {
+        Car *thisCar = reinterpret_cast<Car *>(ptr);
+        for (int i = 0; i < 50; ++i) {
+            pthread_mutex_lock(thisCar->mutex);
+            mvprintw(thisCar->yCord, thisCar->xCord, " ");
+            if (thisCar->destination == 'w') {
+                thisCar->xCord++;
+            } else if (thisCar->destination == 'e') {
+                thisCar->xCord--;
+            }
+            
+            mvprintw(thisCar->yCord, thisCar->xCord, "x");
+            refresh();
+            usleep(25000);
+            pthread_mutex_unlock(thisCar->mutex);
+        }
+        return NULL;
+    };
+};
 
 #endif /* defined(__SO2__Car__) */

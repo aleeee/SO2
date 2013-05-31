@@ -7,8 +7,10 @@
 //
 
 #include "Crossroad.h"
+#include "Car.h"
 #include <ncurses.h>
 #include <pthread.h>
+#include <unistd.h>
 
 Crossroad::Crossroad() {
     xRange = 204;
@@ -100,13 +102,10 @@ void Crossroad::initStructureOfCrossroad() {
     for (int i = 62; i > downSide; --i) {
         crossRoadStructure[i][75] = '#';
     }
-    
-    crossRoadStructure[upperSide][rightSide] = '#';
     crossRoadStructure[upperSide][leftSide] = '#';
+    crossRoadStructure[upperSide][rightSide] = '#';
     crossRoadStructure[downSide][rightSide] = '#';
     crossRoadStructure[downSide][leftSide] = '#';
-    
-    
 }
 
 void Crossroad::drawCrossroad() {
@@ -117,4 +116,8 @@ void Crossroad::drawCrossroad() {
             }
         }
     }
+}
+
+void Crossroad::doTraffic(pthread_t thread) {
+    pthread_join(thread, NULL);
 }

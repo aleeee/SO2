@@ -7,3 +7,13 @@
 //
 
 #include "Road.h"
+
+Road::Road(char sD, int sCY, int sCX, int eCY, int eCX, char dA, char d) {
+    streamDirection = sD;
+    startCordY = sCY;
+    startCordX = sCX;
+    endCordY = eCY;
+    endCordX = eCX;
+    directionAuth = dA;
+    destination = d;
+}

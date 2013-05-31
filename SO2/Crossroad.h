@@ -10,6 +10,7 @@
 #define __SO2__Crossroad__
 
 #include <iostream>
+#include "Car.h"
 
 class Crossroad {
 private:
@@ -20,6 +21,7 @@ public:
     Crossroad();
     void drawCrossroad();
     void initStructureOfCrossroad();
+    void doTraffic(pthread_t);
 };
 
 #endif /* defined(__SO2__Crossroad__) */

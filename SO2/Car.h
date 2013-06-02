@@ -13,6 +13,7 @@
 #include <ncurses.h>
 #include <pthread.h>
 #include <unistd.h>
+#include "Crossroad.h"
 
 class Car {
 private:
@@ -22,23 +23,29 @@ private:
     int yCord;
     int xCord;
     pthread_mutex_t *mutex;
+    Crossroad *cros;
 public:
-    Car(char,char,int,int,int,pthread_mutex_t*);
+    Car(Crossroad *,char,char,int,int,int,pthread_mutex_t*);
     static void *move(void *ptr) {
         Car *thisCar = reinterpret_cast<Car *>(ptr);
-        for (int i = 0; i < 50; ++i) {
-            pthread_mutex_lock(thisCar->mutex);
-            mvprintw(thisCar->yCord, thisCar->xCord, " ");
-            if (thisCar->destination == 'w') {
-                thisCar->xCord++;
-            } else if (thisCar->destination == 'e') {
-                thisCar->xCord--;
+        while (true) {
+            if (!thisCar->cros->isStopped) {
+                mvprintw(thisCar->yCord, thisCar->xCord, " ");
+                if (thisCar->destination == 'w') {
+                    thisCar->xCord++;
+                } else if (thisCar->destination == 'e') {
+                    thisCar->xCord--;
+                }
+                
+                pthread_mutex_lock(thisCar->mutex);
+                mvprintw(thisCar->yCord, thisCar->xCord, "x");
+                pthread_mutex_unlock(thisCar->mutex);
+                usleep(thisCar->speed*1000);
+                refresh();
             }
-            
-            mvprintw(thisCar->yCord, thisCar->xCord, "x");
-            refresh();
-            pthread_mutex_unlock(thisCar->mutex);
-            usleep(thisCar->speed*1000);
+            if (thisCar->cros->isQuited) {
+                break;
+            }
         }
         return NULL;
     };

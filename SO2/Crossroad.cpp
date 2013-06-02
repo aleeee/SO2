@@ -23,6 +23,8 @@ Crossroad::Crossroad() {
         }
     }
     initStructureOfCrossroad();
+    isStopped = 0;
+    isQuited = 0;
 }
 
 void Crossroad::initStructureOfCrossroad() {
@@ -116,8 +118,4 @@ void Crossroad::drawCrossroad() {
             }
         }
     }
-}
-
-void Crossroad::doTraffic(pthread_t thread) {
-    pthread_join(thread, NULL);
 }

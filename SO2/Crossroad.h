@@ -10,18 +10,23 @@
 #define __SO2__Crossroad__
 
 #include <iostream>
-#include "Car.h"
+#include <ncurses.h>
+#include <pthread.h>
+#include <unistd.h>
 
 class Crossroad {
 private:
     char **crossRoadStructure;
     int xRange;// = 204;
     int yRange;// = 63;
+    pthread_t thread;
+    pthread_mutex_t *mutex;
 public:
     Crossroad();
     void drawCrossroad();
     void initStructureOfCrossroad();
-    void doTraffic(pthread_t);
+    int isStopped;
+    int isQuited;
 };
 
 #endif /* defined(__SO2__Crossroad__) */

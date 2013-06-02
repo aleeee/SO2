@@ -8,7 +8,8 @@
 
 #include "Car.h"
 
-Car::Car(char sy, char d, int sp, int yC, int xC, pthread_mutex_t *m) {
+Car::Car(Crossroad *c, char sy, char d, int sp, int yC, int xC, pthread_mutex_t *m) {
+    cros = c;
     symbol = sy;
     destination = d;
     speed = sp;

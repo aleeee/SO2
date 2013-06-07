@@ -57,6 +57,18 @@ int main(int argc, const char * argv[])
             }
             pthread_mutex_unlock(&mutex);
         }
+        else if ( ch == 'u') {
+            pthread_mutex_lock(&mutex);
+            clear();
+            //obsluga zmiany ustawien skrzyzowania
+            mvprintw(0, 0, "Pozdrawiam");
+            int ch = getch();
+            while (ch != 'u') {
+                ch = getch();
+            }
+            cros->drawCrossroad();
+            pthread_mutex_unlock(&mutex);
+        }
         else {
             break;
         }

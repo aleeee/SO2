@@ -69,8 +69,12 @@ private:
                     }
                 }
                 case 's': {
-                    if (this->xCord < 58) {
-                        return 's';
+                    if (this->xCord < 62) {
+                        if ((this->xCord == 58)||(this->xCord == 53)) {
+                            return 's';
+                        } else {
+                            return 'w';
+                        }
                     } else {
                         return 'w';
                     }
@@ -103,6 +107,7 @@ public:
         while (true) {
             pthread_mutex_lock(thisCar->mutex);
             if (!thisCar->cros->isStopped) {
+                mvprintw(1, 0, "            ");
                 int oldY = thisCar->yCord;
                 int oldX = thisCar->xCord;
                 
@@ -128,9 +133,17 @@ public:
                 
                 mvprintw(thisCar->yCord, thisCar->xCord, &thisCar->symbol);
                 mvprintw(oldY, oldX, " ");
-                //thisCar->cros->crossRoadStructure[oldX][oldY] = ' ';
+                thisCar->cros->crossRoadStructure[oldY][oldX] = ' ';
                 if ((thisCar->yCord < 64)&&(thisCar->xCord < 205)&&(thisCar->yCord > -1)&&(thisCar->xCord > -1)) {
-                    //thisCar->cros->crossRoadStructure[thisCar->yCord][thisCar->xCord] = 'c';
+                    if (thisCar->cros->crossRoadStructure[thisCar->yCord][thisCar->xCord] == 'c') {
+                        mvprintw(1, 0, "Zderzenie!!!");
+                        thisCar->cros->crashCount++;
+                        char *converter = new char[5];
+                        sprintf(converter, "%d", thisCar->cros->crashCount);
+                        mvprintw(0, 15, converter);
+                        thisCar->cros->isStopped = true;
+                    }
+                    thisCar->cros->crossRoadStructure[thisCar->yCord][thisCar->xCord] = 'c';
                 } else {
                     pthread_cancel(*thisCar->thisCarThread);
                     //thisCar->thisCarThread->pthread_exit(NULL);
@@ -140,7 +153,7 @@ public:
                 break;
             }
             pthread_mutex_unlock(thisCar->mutex);
-            usleep(thisCar->speed*1000);
+            usleep(thisCar->speed*1500);
         }
         return NULL;
     };

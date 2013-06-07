@@ -15,9 +15,9 @@
 Crossroad::Crossroad() {
     xRange = 204;
     yRange = 63;
-    crossRoadStructure = new char*[yRange];
+    crossRoadStructure = new int*[yRange];
     for (int i = 0; i < yRange; ++i) {
-        crossRoadStructure[i] = new char[xRange];
+        crossRoadStructure[i] = new int[xRange];
         for (int j = 0; j < xRange; ++j) {
             crossRoadStructure[i][j] = ' ';
         }
@@ -25,6 +25,7 @@ Crossroad::Crossroad() {
     initStructureOfCrossroad();
     isStopped = 0;
     isQuited = 0;
+    crashCount = 0;
 }
 
 Crossroad::~Crossroad() {
@@ -115,10 +116,20 @@ void Crossroad::initStructureOfCrossroad() {
 }
 
 void Crossroad::drawCrossroad() {
+    mvprintw(0, 0, "Ilosc kolizji:");
+    char *converter = new char[5];
+    sprintf(converter, "%d", this->crashCount);
+    mvprintw(0, 15, converter);
     for (int i = 0; i < yRange; ++i) {
         for (int j = 0; j < xRange; ++j) {
             if (crossRoadStructure[i][j] != ' ') {
-                mvprintw(i, j, &crossRoadStructure[i][j]);
+                if (crossRoadStructure[i][j] == '#') {
+                    mvprintw(i, j, "#");
+                } else if (crossRoadStructure[i][j] == '-') {
+                    mvprintw(i, j, "-");
+                } else if (crossRoadStructure[i][j] == '|') {
+                    mvprintw(i, j, "|");
+                }
             }
         }
     }

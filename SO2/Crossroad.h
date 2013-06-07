@@ -27,7 +27,8 @@ public:
     void initStructureOfCrossroad();
     int isStopped;
     int isQuited;
-    char **crossRoadStructure;
+    int **crossRoadStructure;
+    int crashCount;
 };
 
 #endif /* defined(__SO2__Crossroad__) */

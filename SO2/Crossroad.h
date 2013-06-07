@@ -16,17 +16,18 @@
 
 class Crossroad {
 private:
-    char **crossRoadStructure;
     int xRange;// = 204;
     int yRange;// = 63;
     pthread_t thread;
     pthread_mutex_t *mutex;
 public:
     Crossroad();
+    ~Crossroad();
     void drawCrossroad();
     void initStructureOfCrossroad();
     int isStopped;
     int isQuited;
+    char **crossRoadStructure;
 };
 
 #endif /* defined(__SO2__Crossroad__) */

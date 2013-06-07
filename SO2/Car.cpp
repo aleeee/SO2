@@ -8,7 +8,7 @@
 
 #include "Car.h"
 
-Car::Car(Crossroad *c, char sy, char d, int sp, int yC, int xC, pthread_mutex_t *m) {
+Car::Car(Crossroad *c, char sy, char d, int sp, int yC, int xC, pthread_t *tCT, pthread_mutex_t *m) {
     cros = c;
     symbol = sy;
     destination = d;
@@ -16,6 +16,9 @@ Car::Car(Crossroad *c, char sy, char d, int sp, int yC, int xC, pthread_mutex_t 
     yCord = yC;
     xCord = xC;
     mutex = m;
+    thisCarThread = tCT;
+    isInTheMiddleOfCrossroad = true;
+    isInTheMiddleOfCrossroad = false;
 }
 
 

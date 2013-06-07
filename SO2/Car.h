@@ -18,34 +18,129 @@
 class Car {
 private:
     char symbol;
-    char destination;
     int speed;
+    char destination;
     int yCord;
     int xCord;
+    bool isOnCrossroad;
+    bool isInTheMiddleOfCrossroad;
+    pthread_t *thisCarThread;
     pthread_mutex_t *mutex;
     Crossroad *cros;
+    char getCurrentDirection() {
+        this->isInTheMiddleOfCrossroad = false;
+        if (this->xCord < 50) {
+            if (this->yCord < 24) {
+                return 'w';
+            } else {
+                return 'e';
+            }
+        } else if (this->xCord > 70) {
+            if (this->yCord < 26) {
+                return 'w';
+            } else {
+                return 'e';
+            }
+        } else if (this->yCord < 20) {
+            if (this->xCord < 60) {
+                return 's';
+            } else {
+                return 'n';
+            }
+        } else if (this->yCord > 30) {
+            if (this->xCord < 55) {
+                return 'n';
+            } else {
+                return 's';
+            }
+        } else {
+            //middle of the crossroad
+            this->isInTheMiddleOfCrossroad = true;
+            switch (this->destination) {
+                case 'n': {
+                    if (this->xCord > 62) {
+                        if ((this->xCord == 68)||(this->xCord == 73)) {
+                            return 'n';
+                        } else {
+                            return 'e';
+                        }
+                    } else {
+                        return 'e';
+                    }
+                }
+                case 's': {
+                    if (this->xCord < 58) {
+                        return 's';
+                    } else {
+                        return 'w';
+                    }
+                }
+                case 'e': {
+                    if (this->yCord > 26) {
+                        return 'e';
+                    } else {
+                        return 's';
+                    }
+                    break;
+                }
+                case 'w': {
+                    if (this->yCord < 24) {
+                        return 'w';
+                    } else {
+                        return 'n';
+                    }
+                    break;
+                }
+            }
+        }
+        
+        return NULL;
+    };
 public:
-    Car(Crossroad *,char,char,int,int,int,pthread_mutex_t*);
+    Car(Crossroad *,char,char,int,int,int,pthread_t*,pthread_mutex_t*);
     static void *move(void *ptr) {
         Car *thisCar = reinterpret_cast<Car *>(ptr);
         while (true) {
+            pthread_mutex_lock(thisCar->mutex);
             if (!thisCar->cros->isStopped) {
-                mvprintw(thisCar->yCord, thisCar->xCord, " ");
-                if (thisCar->destination == 'w') {
-                    thisCar->xCord++;
-                } else if (thisCar->destination == 'e') {
-                    thisCar->xCord--;
+                int oldY = thisCar->yCord;
+                int oldX = thisCar->xCord;
+                
+                //movement
+                switch (thisCar->getCurrentDirection()) {
+                    case 'e': {
+                        thisCar->xCord++;
+                        break;
+                    }
+                    case 'w': {
+                        thisCar->xCord--;
+                        break;
+                    }
+                    case 's': {
+                        thisCar->yCord++;
+                        break;
+                    }
+                    case 'n': {
+                        thisCar->yCord--;
+                        break;
+                    }
                 }
                 
-                pthread_mutex_lock(thisCar->mutex);
-                mvprintw(thisCar->yCord, thisCar->xCord, "x");
-                pthread_mutex_unlock(thisCar->mutex);
-                usleep(thisCar->speed*1000);
-                refresh();
+                mvprintw(thisCar->yCord, thisCar->xCord, &thisCar->symbol);
+                mvprintw(oldY, oldX, " ");
+                //thisCar->cros->crossRoadStructure[oldX][oldY] = ' ';
+                if ((thisCar->yCord < 64)&&(thisCar->xCord < 205)&&(thisCar->yCord > -1)&&(thisCar->xCord > -1)) {
+                    //thisCar->cros->crossRoadStructure[thisCar->yCord][thisCar->xCord] = 'c';
+                } else {
+                    pthread_cancel(*thisCar->thisCarThread);
+                    //thisCar->thisCarThread->pthread_exit(NULL);
+                }
             }
             if (thisCar->cros->isQuited) {
                 break;
             }
+            pthread_mutex_unlock(thisCar->mutex);
+            usleep(thisCar->speed*1000);
         }
         return NULL;
     };

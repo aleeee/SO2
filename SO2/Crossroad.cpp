@@ -27,6 +27,10 @@ Crossroad::Crossroad() {
     isQuited = 0;
 }
 
+Crossroad::~Crossroad() {
+    delete [] crossRoadStructure;
+}
+
 void Crossroad::initStructureOfCrossroad() {
     int leftSide = 50;
     for (int i = 0; i < leftSide; ++i ) {
@@ -47,7 +51,7 @@ void Crossroad::initStructureOfCrossroad() {
     for (int i = 0; i < leftSide; ++i) {
         crossRoadStructure[30][i]  = '#';
     }
-    int rightSide = 75;
+    int rightSide = 70;
     for (int i = 203; i > rightSide; --i ) {
         crossRoadStructure[20][i] = '#';
     }
@@ -71,38 +75,38 @@ void Crossroad::initStructureOfCrossroad() {
         crossRoadStructure[i][50] = '#';
     }
     for (int i = 0; i < upperSide; ++i) {
-        crossRoadStructure[i][55] = '|';
+        crossRoadStructure[i][54] = '|';
     }
     for (int i = 0; i < upperSide; ++i) {
-        crossRoadStructure[i][60] = '|';
+        crossRoadStructure[i][58] = '|';
     }
     for (int i = 0; i < upperSide; ++i) {
-        crossRoadStructure[i][65] = '#';
+        crossRoadStructure[i][62] = '#';
     }
     for (int i = 0; i < upperSide; ++i) {
-        crossRoadStructure[i][70] = '|';
+        crossRoadStructure[i][66] = '|';
     }
     for (int i = 0; i < upperSide; ++i) {
-        crossRoadStructure[i][75] = '#';
+        crossRoadStructure[i][70] = '#';
     }
     int downSide = 30;
     for (int i = 62; i > downSide; --i) {
         crossRoadStructure[i][50] = '#';
     }
     for (int i = 62; i > downSide; --i) {
-        crossRoadStructure[i][55] = '|';
+        crossRoadStructure[i][54] = '|';
     }
     for (int i = 62; i > downSide; --i) {
-        crossRoadStructure[i][60] = '#';
+        crossRoadStructure[i][58] = '#';
     }
     for (int i = 62; i > downSide; --i) {
-        crossRoadStructure[i][65] = '|';
+        crossRoadStructure[i][62] = '|';
     }
     for (int i = 62; i > downSide; --i) {
-        crossRoadStructure[i][70] = '|';
+        crossRoadStructure[i][66] = '|';
     }
     for (int i = 62; i > downSide; --i) {
-        crossRoadStructure[i][75] = '#';
+        crossRoadStructure[i][70] = '#';
     }
     crossRoadStructure[upperSide][leftSide] = '#';
     crossRoadStructure[upperSide][rightSide] = '#';

@@ -48,18 +48,20 @@ private:
                 return 'n';
             }
         } else if (this->yCord > 30) {
-            if (this->xCord < 55) {
-                return 'n';
-            } else {
+            if (this->xCord < 60) {
                 return 's';
+            } else {
+                return 'n';
             }
         } else {
             //middle of the crossroad
             this->isInTheMiddleOfCrossroad = true;
             switch (this->destination) {
                 case 'n': {
-                    if (this->xCord > 62) {
-                        if ((this->xCord == 68)||(this->xCord == 73)) {
+                    if ((this->xCord == 70)||(this->xCord == 69)) {
+                        return 'w';
+                    } else if (this->xCord > 63) {
+                        if ((this->xCord == 68)||(this->xCord == 64)) {
                             return 'n';
                         } else {
                             return 'e';
@@ -69,8 +71,10 @@ private:
                     }
                 }
                 case 's': {
-                    if (this->xCord < 62) {
-                        if ((this->xCord == 58)||(this->xCord == 53)) {
+                    if ((this->xCord == 50)||(this->xCord == 51)) {
+                        return 'e';
+                    } if (this->xCord < 57) {
+                        if ((this->xCord == 56)||(this->xCord == 52)) {
                             return 's';
                         } else {
                             return 'w';
@@ -80,24 +84,35 @@ private:
                     }
                 }
                 case 'e': {
-                    if (this->yCord > 26) {
-                        return 'e';
-                    } else {
+                    if (this->yCord == 30) {
+                        return 'n';
+                    } else if (this->yCord < 27) {
                         return 's';
+                    } else {
+                        if (this->yCord == 28) {
+                            return 's';
+                        } else {
+                            return 'e';
+                        }
                     }
                     break;
                 }
                 case 'w': {
-                    if (this->yCord < 24) {
-                        return 'w';
-                    } else {
+                    if (this->yCord == 20) {
+                        return 's';
+                    } else if (this->yCord > 23) {
                         return 'n';
+                    } else {
+                        if (this->yCord == 22) {
+                            return 'n';
+                        } else {
+                            return 'w';
+                        }
                     }
                     break;
                 }
             }
         }
-        
         return NULL;
     };
 public:
@@ -112,29 +127,55 @@ public:
                 int oldX = thisCar->xCord;
                 
                 //movement
-                switch (thisCar->getCurrentDirection()) {
-                    case 'e': {
-                        thisCar->xCord++;
-                        break;
+                //tu bedzie duzo jebania - trzeba napisac funkcje ktora bedzie wyciagac wskaznik na auto na podstawie wspolrzednych, zeby moglo zwolnic do predkosci taka jaka ma auto przed nim jak je dogoni
+                //ewentualnie samo wyprzedzanie, to bedzie duuuzo latwiejsze ale idzie sie jebac cala idea trzymania sie jednego pasa, bo auto moze nie zdazyc wyprzedzic
+                //z drugiej kurwa strony, do wyprzedzania + ogarnianie tego czy zdazy wrocic na swoj pas trzeba by dojebac w pizdu konkretny algorytm obliczania tego, wiec chyba najbardziej prawdopodobny zamysl jest taki, zeby wyprzedzac i miec wyjebane na to, na jakim pasie sie wczesniej bylo i potemlosowac nowe destination z tego na jakim pasie sie znajduje i tez wczesniej w ogole nie patrzec na to jakie bylo pierwotne, chociaz tu sie pojawia kolejny problem, bo moze byc opcja taka, ze nie bedzie jak wyprzedzic, wtedy i tak musi byc ta funkcja sluzaca do zwalniania
+                //ale ogolnie pozytywne jest to, ze jak skoncze to + kontrole drogi a to bedzie dosc latwe to mam projekt juz raczej gotowy
+                //jednak bez zmieniania predkosci, bedzie samo zwalnianie, dosc sztuczne ale trudno
+                if (thisCar->isInTheMiddleOfCrossroad) {
+                    switch (thisCar->getCurrentDirection()) {
+                        case 'e': {
+                            thisCar->xCord++;
+                            break;
+                        }
+                        case 'w': {
+                            thisCar->xCord--;
+                            break;
+                        }
+                        case 's': {
+                            thisCar->yCord++;
+                            break;
+                        }
+                        case 'n': {
+                            thisCar->yCord--;
+                            break;
+                        }
                     }
-                    case 'w': {
-                        thisCar->xCord--;
-                        break;
-                    }
-                    case 's': {
-                        thisCar->yCord++;
-                        break;
-                    }
-                    case 'n': {
-                        thisCar->yCord--;
-                        break;
+                } else {
+                    switch (thisCar->getCurrentDirection()) {
+                        case 'e': {
+                            thisCar->xCord++;
+                            break;
+                        }
+                        case 'w': {
+                            thisCar->xCord--;
+                            break;
+                        }
+                        case 's': {
+                            thisCar->yCord++;
+                            break;
+                        }
+                        case 'n': {
+                            thisCar->yCord--;
+                            break;
+                        }
                     }
                 }
                 
                 mvprintw(thisCar->yCord, thisCar->xCord, &thisCar->symbol);
                 mvprintw(oldY, oldX, " ");
                 thisCar->cros->crossRoadStructure[oldY][oldX] = ' ';
-                if ((thisCar->yCord < 64)&&(thisCar->xCord < 205)&&(thisCar->yCord > -1)&&(thisCar->xCord > -1)) {
+                if ((thisCar->yCord < 63)&&(thisCar->xCord < 205)&&(thisCar->yCord > -1)&&(thisCar->xCord > -1)) {
                     if (thisCar->cros->crossRoadStructure[thisCar->yCord][thisCar->xCord] == 'c') {
                         mvprintw(1, 0, "Zderzenie!!!");
                         thisCar->cros->crashCount++;
@@ -146,14 +187,15 @@ public:
                     thisCar->cros->crossRoadStructure[thisCar->yCord][thisCar->xCord] = 'c';
                 } else {
                     pthread_cancel(*thisCar->thisCarThread);
-                    //thisCar->thisCarThread->pthread_exit(NULL);
+                    //pthread_exit(thisCar->thisCarThread);
                 }
             }
             if (thisCar->cros->isQuited) {
-                break;
+                //break;
             }
             pthread_mutex_unlock(thisCar->mutex);
             usleep(thisCar->speed*1500);
+            //pthread_exit(thisCar->thisCarThread);
         }
         return NULL;
     };

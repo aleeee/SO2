@@ -119,7 +119,7 @@ public:
     Car(Crossroad *,char,char,int,int,int,pthread_t*,pthread_mutex_t*);
     static void *move(void *ptr) {
         Car *thisCar = reinterpret_cast<Car *>(ptr);
-        while (true) {
+        while (thisCar->isOnCrossroad) {
             pthread_mutex_lock(thisCar->mutex);
             if (!thisCar->cros->isStopped) {
                 mvprintw(1, 0, "            ");
@@ -132,50 +132,37 @@ public:
                 //z drugiej kurwa strony, do wyprzedzania + ogarnianie tego czy zdazy wrocic na swoj pas trzeba by dojebac w pizdu konkretny algorytm obliczania tego, wiec chyba najbardziej prawdopodobny zamysl jest taki, zeby wyprzedzac i miec wyjebane na to, na jakim pasie sie wczesniej bylo i potemlosowac nowe destination z tego na jakim pasie sie znajduje i tez wczesniej w ogole nie patrzec na to jakie bylo pierwotne, chociaz tu sie pojawia kolejny problem, bo moze byc opcja taka, ze nie bedzie jak wyprzedzic, wtedy i tak musi byc ta funkcja sluzaca do zwalniania
                 //ale ogolnie pozytywne jest to, ze jak skoncze to + kontrole drogi a to bedzie dosc latwe to mam projekt juz raczej gotowy
                 //jednak bez zmieniania predkosci, bedzie samo zwalnianie, dosc sztuczne ale trudno
-                if (thisCar->isInTheMiddleOfCrossroad) {
-                    switch (thisCar->getCurrentDirection()) {
-                        case 'e': {
+                switch (thisCar->getCurrentDirection()) {
+                    case 'e': {
+                        if (thisCar->cros->crossRoadStructure[thisCar->yCord][thisCar->xCord+1] == ' ') {
                             thisCar->xCord++;
-                            break;
                         }
-                        case 'w': {
-                            thisCar->xCord--;
-                            break;
-                        }
-                        case 's': {
-                            thisCar->yCord++;
-                            break;
-                        }
-                        case 'n': {
-                            thisCar->yCord--;
-                            break;
-                        }
+                        break;
                     }
-                } else {
-                    switch (thisCar->getCurrentDirection()) {
-                        case 'e': {
-                            thisCar->xCord++;
-                            break;
-                        }
-                        case 'w': {
+                    case 'w': {
+                        if (thisCar->cros->crossRoadStructure[thisCar->yCord][thisCar->xCord-1] == ' ') {
                             thisCar->xCord--;
-                            break;
                         }
-                        case 's': {
+                        break;
+                    }
+                    case 's': {
+                        if (thisCar->cros->crossRoadStructure[thisCar->yCord+1][thisCar->xCord] == ' ') {
                             thisCar->yCord++;
-                            break;
                         }
-                        case 'n': {
+                        break;
+                    }
+                    case 'n': {
+                        if (thisCar->cros->crossRoadStructure[thisCar->yCord-1][thisCar->xCord] == ' ') {
                             thisCar->yCord--;
-                            break;
                         }
+                        break;
                     }
                 }
-                
-                mvprintw(thisCar->yCord, thisCar->xCord, &thisCar->symbol);
-                mvprintw(oldY, oldX, " ");
                 thisCar->cros->crossRoadStructure[oldY][oldX] = ' ';
-                if ((thisCar->yCord < 63)&&(thisCar->xCord < 205)&&(thisCar->yCord > -1)&&(thisCar->xCord > -1)) {
+                mvprintw(oldY, oldX, " ");
+                if ((thisCar->yCord < 63)&&(thisCar->xCord < 204)&&(thisCar->yCord > -1)&&(thisCar->xCord > -1)) {
+                    mvprintw(thisCar->yCord, thisCar->xCord, &thisCar->symbol);
+                    //if (0) {
                     if (thisCar->cros->crossRoadStructure[thisCar->yCord][thisCar->xCord] == 'c') {
                         mvprintw(1, 0, "Zderzenie!!!");
                         thisCar->cros->crashCount++;
@@ -186,16 +173,16 @@ public:
                     }
                     thisCar->cros->crossRoadStructure[thisCar->yCord][thisCar->xCord] = 'c';
                 } else {
-                    pthread_cancel(*thisCar->thisCarThread);
-                    //pthread_exit(thisCar->thisCarThread);
+                    thisCar->isOnCrossroad = false;
+                    //pthread_cancel(*thisCar->thisCarThread);
+                    //pthread_exit(0);
                 }
             }
             if (thisCar->cros->isQuited) {
-                //break;
+                break;
             }
             pthread_mutex_unlock(thisCar->mutex);
-            usleep(thisCar->speed*1500);
-            //pthread_exit(thisCar->thisCarThread);
+            usleep(thisCar->speed*2000);
         }
         return NULL;
     };

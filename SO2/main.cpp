@@ -58,7 +58,7 @@ void randomCoords(int &y, int &x, char &dest){
         }
         case 2: {
             x = 0;
-            y = 27;
+            y = 29;
             dest = randomDest('w');
             break;
         }
@@ -128,7 +128,7 @@ int main(int argc, const char * argv[])
     std::vector<pthread_t> carThreads;
     
     initscr();
-    raw();
+    //raw();
     curs_set(0);
     
     pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
@@ -151,9 +151,10 @@ int main(int argc, const char * argv[])
     while (true) {
         int ch = getch();
         if (ch == ERR) {
+            //continue;
+            //refresh();
+            //usleep(1000);
             continue;
-            refresh();
-            usleep(1000);
         }
         else if (ch == 's') {
             pthread_mutex_lock(&mutex);
@@ -191,7 +192,6 @@ int main(int argc, const char * argv[])
     }
     
     pthread_mutex_destroy(&mutex);
-    //pthread_exit(0);
     endwin();
     
     delete cros;

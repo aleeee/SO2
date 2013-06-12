@@ -17,7 +17,7 @@ Car::Car(Crossroad *c, char sy, char d, int sp, int yC, int xC, pthread_t *tCT, 
     xCord = xC;
     mutex = m;
     thisCarThread = tCT;
-    isInTheMiddleOfCrossroad = true;
+    isOnCrossroad = true;
     isInTheMiddleOfCrossroad = false;
 }
 

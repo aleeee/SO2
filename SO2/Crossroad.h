@@ -28,7 +28,11 @@ public:
     int isStopped;
     int isQuited;
     int **crossRoadStructure;
+    int **carsWithDirections;
+    int **roadsDirections;
     int crashCount;
+    bool check(char,int);
+    bool isAllowed(int,int,char);
 };
 
 #endif /* defined(__SO2__Crossroad__) */

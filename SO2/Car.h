@@ -20,13 +20,40 @@ private:
     char symbol;
     int speed;
     char destination;
+    char source;
     int yCord;
     int xCord;
     bool isOnCrossroad;
     bool isInTheMiddleOfCrossroad;
+    bool directionSet;
     pthread_t *thisCarThread;
     pthread_mutex_t *mutex;
     Crossroad *cros;
+    static char randomDest(char ch) {
+        int x = rand()%4;
+        
+        if (x == 0) {
+            if (ch != 'n')
+                return 'n';
+            else
+                return randomDest('n');
+        } else if (x == 1) {
+            if (ch != 's')
+                return 's';
+            else
+                return randomDest('s');
+        } else if (x == 2) {
+            if (ch != 'e')
+                return 'e';
+            else
+                return randomDest('e');
+        } else {
+            if (ch != 'w')
+                return 'w';
+            else
+                return randomDest('w');
+        }
+    };
     char getCurrentDirection() {
         this->isInTheMiddleOfCrossroad = false;
         if (this->xCord < 50) {
@@ -54,6 +81,13 @@ private:
                 return 'n';
             }
         } else {
+            if (!directionSet) {
+                while (!this->cros->isAllowed(this->yCord, this->xCord, this->destination)) {
+                    mvprintw(0, 0, "pozdrawiam");
+                    this->destination = randomDest(this->destination);
+                }
+                directionSet = true;
+            }
             //middle of the crossroad
             this->isInTheMiddleOfCrossroad = true;
             switch (this->destination) {
@@ -134,44 +168,84 @@ public:
                 //jednak bez zmieniania predkosci, bedzie samo zwalnianie, dosc sztuczne ale trudno
                 switch (thisCar->getCurrentDirection()) {
                     case 'e': {
-                        if (thisCar->cros->crossRoadStructure[thisCar->yCord][thisCar->xCord+1] == ' ') {
+                        if (thisCar->xCord+1 < 204) {
+                            if (thisCar->cros->crossRoadStructure[thisCar->yCord][thisCar->xCord+1] == ' ') {
+                                thisCar->xCord++;
+                            } else if ((thisCar->isInTheMiddleOfCrossroad)&&(thisCar->cros->carsWithDirections[thisCar->yCord][thisCar->xCord+1] != thisCar->source)) {
+                                updateCrash(thisCar);
+                                if (thisCar->yCord != 20) {
+                                    thisCar->yCord--;
+                                } else {
+                                    thisCar->yCord++;
+                                }
+                                
+                            } else if (!thisCar->isInTheMiddleOfCrossroad) {
+                                //zmiana pasa 
+                            }
+                        } else {
                             thisCar->xCord++;
                         }
                         break;
                     }
                     case 'w': {
-                        if (thisCar->cros->crossRoadStructure[thisCar->yCord][thisCar->xCord-1] == ' ') {
+                        if (thisCar->xCord-1 > -1) {
+                            if (thisCar->cros->crossRoadStructure[thisCar->yCord][thisCar->xCord-1] == ' ') {
+                                thisCar->xCord--;
+                            } else if ((thisCar->isInTheMiddleOfCrossroad)&&(thisCar->cros->carsWithDirections[thisCar->yCord][thisCar->xCord-1] != thisCar->source)) {
+                                updateCrash(thisCar);
+                                if (thisCar->yCord != 30) {
+                                    thisCar->yCord--;
+                                } else {
+                                    thisCar->yCord++;
+                                }
+                            }
+                        } else {
                             thisCar->xCord--;
                         }
                         break;
                     }
                     case 's': {
-                        if (thisCar->cros->crossRoadStructure[thisCar->yCord+1][thisCar->xCord] == ' ') {
+                        if (thisCar->yCord+1 < 63) {
+                            if (thisCar->cros->crossRoadStructure[thisCar->yCord+1][thisCar->xCord] == ' ') {
+                                thisCar->yCord++;
+                            } else if ((thisCar->isInTheMiddleOfCrossroad)&&(thisCar->cros->carsWithDirections[thisCar->yCord+1][thisCar->xCord] != thisCar->source)) {
+                                updateCrash(thisCar);
+                                if (thisCar->xCord != 50) {
+                                    thisCar->xCord--;
+                                } else {
+                                    thisCar->xCord++;
+                                }
+                            }
+                        } else {
                             thisCar->yCord++;
                         }
                         break;
                     }
                     case 'n': {
-                        if (thisCar->cros->crossRoadStructure[thisCar->yCord-1][thisCar->xCord] == ' ') {
+                        if (thisCar->yCord-1 > -1) {
+                            if (thisCar->cros->crossRoadStructure[thisCar->yCord-1][thisCar->xCord] == ' ') {
+                                thisCar->yCord--;
+                            } else if ((thisCar->isInTheMiddleOfCrossroad)&&(thisCar->cros->carsWithDirections[thisCar->yCord-1][thisCar->xCord] != thisCar->source)) {
+                                updateCrash(thisCar);
+                                if (thisCar->yCord != 70) {
+                                    thisCar->yCord--;
+                                } else {
+                                    thisCar->yCord++;
+                                }
+                            }
+                        } else {
                             thisCar->yCord--;
                         }
                         break;
                     }
                 }
                 thisCar->cros->crossRoadStructure[oldY][oldX] = ' ';
+                thisCar->cros->carsWithDirections[oldY][oldX] = ' ';
                 mvprintw(oldY, oldX, " ");
                 if ((thisCar->yCord < 63)&&(thisCar->xCord < 204)&&(thisCar->yCord > -1)&&(thisCar->xCord > -1)) {
                     mvprintw(thisCar->yCord, thisCar->xCord, &thisCar->symbol);
-                    //if (0) {
-                    if (thisCar->cros->crossRoadStructure[thisCar->yCord][thisCar->xCord] == 'c') {
-                        mvprintw(1, 0, "Zderzenie!!!");
-                        thisCar->cros->crashCount++;
-                        char *converter = new char[5];
-                        sprintf(converter, "%d", thisCar->cros->crashCount);
-                        mvprintw(0, 15, converter);
-                        thisCar->cros->isStopped = true;
-                    }
                     thisCar->cros->crossRoadStructure[thisCar->yCord][thisCar->xCord] = 'c';
+                    thisCar->cros->carsWithDirections[thisCar->yCord][thisCar->xCord] = thisCar->source;
                 } else {
                     thisCar->isOnCrossroad = false;
                     //pthread_cancel(*thisCar->thisCarThread);
@@ -186,6 +260,14 @@ public:
         }
         return NULL;
     };
+    static void updateCrash(Car *thisCar) {
+        //mvprintw(1, 0, "Zderzenie!!!");
+        thisCar->cros->crashCount++;
+        char *converter = new char[5];
+        sprintf(converter, "%d", thisCar->cros->crashCount);
+        mvprintw(0, 15, converter);
+        //thisCar->cros->isStopped = true;
+    }
 };
 
 #endif /* defined(__SO2__Car__) */

@@ -19,6 +19,9 @@ Car::Car(Crossroad *c, char sy, char d, int sp, int yC, int xC, pthread_t *tCT, 
     thisCarThread = tCT;
     isOnCrossroad = true;
     isInTheMiddleOfCrossroad = false;
+    source = this->getCurrentDirection();
+    //enteringTheCrossroad = false;
+    directionSet = false;
 }
 
 

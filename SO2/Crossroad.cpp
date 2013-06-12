@@ -15,11 +15,22 @@
 Crossroad::Crossroad() {
     xRange = 204;
     yRange = 63;
+    roadsDirections = new int*[12];
+    for (int i = 0; i < 12; ++i) {
+        roadsDirections[i] = new int[4];
+        roadsDirections[i][0] = 'n';
+        roadsDirections[i][1] = 's';
+        roadsDirections[i][2] = 'w';
+        roadsDirections[i][3] = 'e';
+    }
     crossRoadStructure = new int*[yRange];
+    carsWithDirections = new int*[yRange];
     for (int i = 0; i < yRange; ++i) {
         crossRoadStructure[i] = new int[xRange];
+        carsWithDirections[i] = new int[xRange];
         for (int j = 0; j < xRange; ++j) {
             crossRoadStructure[i][j] = ' ';
+            carsWithDirections[i][j] = ' ';
         }
     }
     initStructureOfCrossroad();
@@ -30,6 +41,8 @@ Crossroad::Crossroad() {
 
 Crossroad::~Crossroad() {
     delete [] crossRoadStructure;
+    delete [] carsWithDirections;
+    delete [] roadsDirections;
 }
 
 void Crossroad::initStructureOfCrossroad() {
@@ -133,4 +146,51 @@ void Crossroad::drawCrossroad() {
             }
         }
     }
+}
+
+bool Crossroad::check(char dest, int num) {
+    for (int i = 0; i < 4; ++i) {
+        if (roadsDirections[num][i] == dest) {
+            return true;
+        }
+    }
+    return false;
+}
+
+bool Crossroad::isAllowed(int y, int x, char dest) {
+    if (x == 50) {
+        if (y == 25) {
+            return check(dest, 0);                         //  6 7 8
+        } else if (y == 27) {                              // 0       3
+            return check(dest, 1);                         // 1       4
+        } else if (y == 29) {                              // 2       5
+            return check(dest, 2);                         //  9 10 11
+        }
+    } else if (x == 70) {
+        if (y == 21) {
+            return check(dest, 3);
+        } else if (y == 23) {
+            return check(dest, 4);
+        } else if (y == 25) {
+            return check(dest, 5);
+        }
+    } else if (y == 20) {
+        if (x == 52) {
+            return check(dest, 6);
+        } else if (x == 56) {
+            return check(dest, 7);
+        } else if (x == 60) {
+            return check(dest, 8);
+        }
+    } else if (y == 30) {
+        if (x == 60) {
+            return check(dest, 9);
+        } else if (x == 64) {
+            return check(dest, 10);
+        } else if (x == 68) {
+            return check(dest, 11);
+        }
+    }
+    
+    return false;
 }

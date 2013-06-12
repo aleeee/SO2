@@ -18,11 +18,12 @@
 
 char randomDest(char ch) {
     int x = rand()%4;
+    
     if (x == 0) {
         if (ch != 'n')
             return 'n';
         else
-            return randomDest('n');
+           return randomDest('n');
     } else if (x == 1) {
         if (ch != 's')
             return 's';
@@ -39,7 +40,7 @@ char randomDest(char ch) {
         else
             return randomDest('w');
     }
-}
+};
 
 void randomCoords(int &y, int &x, char &dest){
     int r = rand()%12;
@@ -119,6 +120,46 @@ void randomCoords(int &y, int &x, char &dest){
     }
 }
 
+int numFromChar(char ch) {
+    if (ch == '0') {
+        return 0;
+    } else if (ch == '1') {
+        return 1;
+    } else if (ch == '2') {
+        return 2;
+    } else if (ch == '3') {
+        return 3;
+    } else if (ch == '4') {
+        return 4;
+    } else if (ch == '5') {
+        return 5;
+    } else if (ch == '6') {
+        return 6;
+    } else if (ch == '7') {
+        return 7;
+    } else if (ch == '8') {
+        return 8;
+    } else if (ch == '9') {
+        return 9;
+    } else if (ch == 'a') {
+        return 10;
+    } else if (ch == 'b') {
+        return 11;
+    }
+    return -1;
+}
+
+void drawMap() {
+    mvprintw(5, 12, "0");
+    mvprintw(6, 12, "1");
+    mvprintw(7, 12, "2");
+    mvprintw(4, 13, "6  7  8");
+    mvprintw(8, 13, "9  a b");
+    mvprintw(5, 18, "3");
+    mvprintw(6, 18, "4");
+    mvprintw(7, 18, "5");
+}
+
 int main(int argc, const char * argv[])
 {
     srand(time(NULL));
@@ -169,10 +210,32 @@ int main(int argc, const char * argv[])
             pthread_mutex_lock(&mutex);
             clear();
             //obsluga zmiany ustawien skrzyzowania
-            mvprintw(0, 0, "Pozdrawiam");
+            //mvprintw(0, 0, "Zmiana mozliwych kierunkow dla drogi:");
+            mvprintw(2, 0, "ustawienia drog - k");
+            mvprintw(3, 0, "ustawienia swiatel - s");
             int ch = getch();
             while (ch != 'u') {
                 ch = getch();
+                if ( ch == 'r') {
+                    cros->crashCount = 0;
+                }
+                if ( ch == 'k') {
+                    mvprintw(4, 0, "numer drogi");
+                    drawMap();
+                    ch = getch();
+                    while (numFromChar(ch) == -1)
+                        ch = getch();
+                    int num = numFromChar(ch);
+                    for (int i = 0; i < 4; ++i) {
+                        int c = getch();
+                        while ((c != 'n')&&(c != 's')&&(c != 'e')&&(c != 'w')) {
+                            c = getch();
+                        }
+                        cros->roadsDirections[num][i] = c;
+                        char cc = c;
+                        mvprintw(10, i, &cc);
+                    }
+                }
             }
             cros->drawCrossroad();
             pthread_mutex_unlock(&mutex);
@@ -185,8 +248,9 @@ int main(int argc, const char * argv[])
             char dest;
             randomCoords(y, x, dest);
             //pthread_mutex_lock(&mutex);
+            int r = rand()%10 + 15;
             carThreads.push_back(*new pthread_t());
-            pthread_create(&carThreads.at(threadStackPointer++), NULL, Car::move, new Car(cros,dest,dest,25,y,x,&carThreads.at(carThreads.size()-1),&mutex));
+            pthread_create(&carThreads.at(threadStackPointer++), NULL, Car::move, new Car(cros,dest,dest,r,y,x,&carThreads.at(carThreads.size()-1),&mutex));
             //pthread_mutex_unlock(&mutex);
         }
     }

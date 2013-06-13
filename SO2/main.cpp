@@ -311,6 +311,10 @@ int main(int argc, const char * argv[])
         }
     }
     
+    for (int i = 0; i < carThreads.size(); ++i) {
+        pthread_cancel(carThreads.at(i));
+    }
+    
     pthread_mutex_destroy(&mutex);
     endwin();
     

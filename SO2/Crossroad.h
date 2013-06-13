@@ -13,6 +13,7 @@
 #include <ncurses.h>
 #include <pthread.h>
 #include <unistd.h>
+#include "Light.h"
 
 class Crossroad {
 private:
@@ -21,7 +22,7 @@ private:
     pthread_t thread;
     pthread_mutex_t *mutex;
 public:
-    Crossroad();
+    Crossroad(Light *);
     ~Crossroad();
     void drawCrossroad();
     void initStructureOfCrossroad();
@@ -33,6 +34,8 @@ public:
     int crashCount;
     bool check(char,int);
     bool isAllowed(int,int,char);
+    bool isGreenLight(int,int);
+    Light *lights;
 };
 
 #endif /* defined(__SO2__Crossroad__) */

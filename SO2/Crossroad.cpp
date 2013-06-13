@@ -12,7 +12,7 @@
 #include <pthread.h>
 #include <unistd.h>
 
-Crossroad::Crossroad() {
+Crossroad::Crossroad(Light *l) {
     xRange = 204;
     yRange = 63;
     roadsDirections = new int*[12];
@@ -37,6 +37,7 @@ Crossroad::Crossroad() {
     isStopped = 0;
     isQuited = 0;
     crashCount = 0;
+    lights = l;
 }
 
 Crossroad::~Crossroad() {
@@ -193,4 +194,42 @@ bool Crossroad::isAllowed(int y, int x, char dest) {
     }
     
     return false;
+}
+
+bool Crossroad::isGreenLight(int y, int x) {
+    if (x == 50) {
+        if (y == 25) {
+            return lights[0].getCurrentState();                       //  6 7 8
+        } else if (y == 27) {                              // 0       3
+            return lights[1].getCurrentState();                         // 1       4
+        } else if (y == 29) {                              // 2       5
+            return lights[2].getCurrentState();                        //  9 10 11
+        }
+    } else if (x == 70) {
+        if (y == 21) {
+            return lights[3].getCurrentState();
+        } else if (y == 23) {
+            return lights[4].getCurrentState();
+        } else if (y == 25) {
+            return lights[5].getCurrentState();
+        }
+    } else if (y == 20) {
+        if (x == 52) {
+            return lights[6].getCurrentState();
+        } else if (x == 56) {
+            return lights[7].getCurrentState();
+        } else if (x == 60) {
+            return lights[8].getCurrentState();
+        }
+    } else if (y == 30) {
+        if (x == 60) {
+            return lights[9].getCurrentState();
+        } else if (x == 64) {
+            return lights[10].getCurrentState();
+        } else if (x == 68) {
+            return lights[11].getCurrentState();
+        }
+    } 
+    
+    return true;
 }

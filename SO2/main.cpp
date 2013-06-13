@@ -15,10 +15,10 @@
 #include <vector>
 #include "Crossroad.h"
 #include "Car.h"
+#include "Light.h"
 
 char randomDest(char ch) {
     int x = rand()%4;
-    
     if (x == 0) {
         if (ch != 'n')
             return 'n';
@@ -167,6 +167,20 @@ int main(int argc, const char * argv[])
     int threadStackPointer = 0;
     
     std::vector<pthread_t> carThreads;
+    pthread_t lightThreads[12];
+    Light *lights;
+    lights = new Light[12];
+    for (int i = 0; i < 12; ++i) {
+        bool b;
+        if (i < 6)
+            b = true;
+        else
+            b = false;
+        lights[i] = *new Light();
+        lights[i].setNewTime(5);
+        lights[i].setColor(b);
+    }
+    
     
     initscr();
     //raw();
@@ -174,11 +188,16 @@ int main(int argc, const char * argv[])
     
     pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 
-    Crossroad *cros = new Crossroad();
+    Crossroad *cros = new Crossroad(lights);
     
     pthread_mutex_lock(&mutex);
     cros->drawCrossroad();
     pthread_mutex_unlock(&mutex);
+    
+    for (int i = 0; i < 12; ++i) {
+        pthread_create(&lightThreads[i], NULL, Light::light, &lights[i]);
+    }
+    
     carThreads.push_back(*new pthread_t());
     pthread_create(&carThreads.at(threadStackPointer++), NULL, Car::move, new Car(cros,'x','e',15,25,1,&carThreads.at(carThreads.size()-1),&mutex));
     carThreads.push_back(*new pthread_t());
@@ -192,6 +211,14 @@ int main(int argc, const char * argv[])
     while (true) {
         int ch = getch();
         if (ch == ERR) {
+            pthread_mutex_lock(&mutex);
+            for (int i = 0; i < 12; ++i) {
+                if (lights[i].getCurrentState())
+                    mvprintw(31+i, 0, "g");
+                else
+                    mvprintw(31+i, 0, "r");
+            }
+            pthread_mutex_unlock(&mutex);
             //continue;
             //refresh();
             //usleep(1000);
@@ -218,8 +245,7 @@ int main(int argc, const char * argv[])
                 ch = getch();
                 if ( ch == 'r') {
                     cros->crashCount = 0;
-                }
-                if ( ch == 'k') {
+                } else if ( ch == 'k') {
                     mvprintw(4, 0, "numer drogi");
                     drawMap();
                     ch = getch();
@@ -235,6 +261,36 @@ int main(int argc, const char * argv[])
                         char cc = c;
                         mvprintw(10, i, &cc);
                     }
+                } else if (ch == 's') {
+                    //swiatla
+                    mvprintw(4, 0, "numer swiatla");
+                    drawMap();
+                    ch = getch();
+                    while (numFromChar(ch) == -1)
+                        ch = getch();
+                    int num = numFromChar(ch);
+
+                    mvprintw(20, 0, "1  - 1, 2 - 2, 3 - 3, 4 - 4, 5 - 5");
+                    int c = getch();
+                    while ((c != '1')&&(c != '2')&&(c != '3')&&(c != '4')&&(c != '5')) {
+                        c = getch();
+                    }
+                    int newLength;
+                    if (ch == '1')
+                        newLength = 1;
+                    else if (ch == '2')
+                        newLength = 2;
+                    else if (ch == '3')
+                        newLength = 3;
+                    else if (ch == '4')
+                        newLength = 4;
+                    else
+                        newLength = 5;
+                    
+                    lights[num].setNewTime(newLength);
+                    
+                    
+                    
                 }
             }
             cros->drawCrossroad();

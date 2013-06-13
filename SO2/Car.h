@@ -83,7 +83,6 @@ private:
         } else {
             if (!directionSet) {
                 while (!this->cros->isAllowed(this->yCord, this->xCord, this->destination)) {
-                    mvprintw(0, 0, "pozdrawiam");
                     this->destination = randomDest(this->destination);
                 }
                 directionSet = true;
@@ -160,12 +159,12 @@ public:
                 int oldY = thisCar->yCord;
                 int oldX = thisCar->xCord;
                 
-                //movement
-                //tu bedzie duzo jebania - trzeba napisac funkcje ktora bedzie wyciagac wskaznik na auto na podstawie wspolrzednych, zeby moglo zwolnic do predkosci taka jaka ma auto przed nim jak je dogoni
-                //ewentualnie samo wyprzedzanie, to bedzie duuuzo latwiejsze ale idzie sie jebac cala idea trzymania sie jednego pasa, bo auto moze nie zdazyc wyprzedzic
-                //z drugiej kurwa strony, do wyprzedzania + ogarnianie tego czy zdazy wrocic na swoj pas trzeba by dojebac w pizdu konkretny algorytm obliczania tego, wiec chyba najbardziej prawdopodobny zamysl jest taki, zeby wyprzedzac i miec wyjebane na to, na jakim pasie sie wczesniej bylo i potemlosowac nowe destination z tego na jakim pasie sie znajduje i tez wczesniej w ogole nie patrzec na to jakie bylo pierwotne, chociaz tu sie pojawia kolejny problem, bo moze byc opcja taka, ze nie bedzie jak wyprzedzic, wtedy i tak musi byc ta funkcja sluzaca do zwalniania
-                //ale ogolnie pozytywne jest to, ze jak skoncze to + kontrole drogi a to bedzie dosc latwe to mam projekt juz raczej gotowy
-                //jednak bez zmieniania predkosci, bedzie samo zwalnianie, dosc sztuczne ale trudno
+                if (!thisCar->cros->isGreenLight(oldY, oldX)) {
+                    pthread_mutex_unlock(thisCar->mutex);
+                    usleep(thisCar->speed*2000);
+                    continue;
+                }
+                
                 switch (thisCar->getCurrentDirection()) {
                     case 'e': {
                         if (thisCar->xCord+1 < 204) {
@@ -179,8 +178,6 @@ public:
                                     thisCar->yCord++;
                                 }
                                 
-                            } else if (!thisCar->isInTheMiddleOfCrossroad) {
-                                //zmiana pasa 
                             }
                         } else {
                             thisCar->xCord++;

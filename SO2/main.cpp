@@ -219,9 +219,6 @@ int main(int argc, const char * argv[])
                     mvprintw(31+i, 0, "r");
             }
             pthread_mutex_unlock(&mutex);
-            //continue;
-            //refresh();
-            //usleep(1000);
             continue;
         }
         else if (ch == 's') {
@@ -262,7 +259,7 @@ int main(int argc, const char * argv[])
                         mvprintw(10, i, &cc);
                     }
                 } else if (ch == 's') {
-                    //swiatla
+                    //lights
                     mvprintw(4, 0, "numer swiatla");
                     drawMap();
                     ch = getch();
@@ -288,9 +285,6 @@ int main(int argc, const char * argv[])
                         newLength = 5;
                     
                     lights[num].setNewTime(newLength);
-                    
-                    
-                    
                 }
             }
             cros->drawCrossroad();
